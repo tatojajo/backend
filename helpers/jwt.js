@@ -1,11 +1,25 @@
-const { expressjwt } = require("express-jwt");
+const jwt = require("jsonwebtoken");
 
-function authJwt() {
+function authJwt(req, res, next) {
+ 
+  if (!req || !req.headers || !req.headers.authorization) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
+  const token = req.headers.authorization;
+
   const secret = process.env.JWT_KEY;
-  return expressjwt({
-    secret: secret,
-    algorithms: ["HS256"],
-  }).unless({ path: ["/api/users/login", "/api/users/register"] });
+
+  jwt.verify(token, secret, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Unauthorized: Invalid token" });
+    }
+
+
+    req.user = decoded;
+
+    next();
+  });
 }
 
 module.exports = authJwt;

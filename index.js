@@ -14,7 +14,7 @@ app.use(cors());
 app.options("*", cors());
 app.use(bodyParser.json());
 app.use("/api/users", users);
-app.use(authJwt());
+app.use(authJwt);
 app.use("/api/todos", todos);
 
 
